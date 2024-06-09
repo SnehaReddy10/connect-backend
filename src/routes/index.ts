@@ -1,10 +1,8 @@
 import { Router } from 'express';
 import { userRouter } from './user';
+import { authRouter } from './auth';
 
 export const router = Router();
 
-router.get('/hello', (req, res) => {
-  return res.send('Home');
-});
-
+router.use('/auth', authRouter);
 router.use('/user', userRouter);
