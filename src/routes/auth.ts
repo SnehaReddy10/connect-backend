@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { registerUserUseCase } from '../use-cases/user/regiser.use-case';
-import { loginUseCase } from '../use-cases/user/login.use-case';
+import { registerUserUseCase } from '../use-cases/auth/regiser.use-case';
+import { loginUseCase } from '../use-cases/auth/login.use-case';
 
 export const authRouter = Router();
 
