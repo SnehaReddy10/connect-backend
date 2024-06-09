@@ -3,6 +3,7 @@ import { USER } from '../../constants/error-messages';
 import { STATUS_CODES } from '../../constants/status-codes';
 import { User } from '../../models/user.model';
 import { mapUser } from '../../mapper/user.mapper';
+import bcrypt from 'bcrypt';
 
 const registerUserSchema = z.object({
   username: z.string({
@@ -31,6 +32,16 @@ export const registerUserUseCase = async (req: any, res: any) => {
       const errors = error.errors.map((x) => x.message);
       return res.status(STATUS_CODES.BadRequest).json({ errors });
     }
+
+    const existingUser = await User.find({ email: data.email });
+    if (existingUser.length > 0) {
+      return res
+        .status(STATUS_CODES.BadRequest)
+        .json({ error: USER.USER_ALREADY_EXISTS });
+    }
+
+    const hashedPassword = bcrypt.hashSync(data.password, 8);
+    data.password = hashedPassword;
 
     const user = new User(data);
     await user.save();
