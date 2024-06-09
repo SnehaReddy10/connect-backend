@@ -1,13 +1,14 @@
-import { WebSocketServer, WebSocket } from 'ws';
-import { ExtendedWebSocket } from './interfaces/ExtendedWebSocket';
-import { MESSAGE_TYPE } from './constants/messages';
+import { WebSocket } from 'ws';
+import { MESSAGE_TYPE } from '../../constants/messages';
+import { ExtendedWebSocket } from '../../interfaces/ExtendedWebSocket';
 import { v4 as uuidv4 } from 'uuid';
-
-const wss = new WebSocketServer({ port: 8080 });
 
 const rooms = new Map<string, ExtendedWebSocket[]>();
 
-wss.on('connection', (ws: ExtendedWebSocket, request) => {
+export const handleWebsocketConnection = (
+  ws: ExtendedWebSocket,
+  request: any
+) => {
   const roomId = request.url?.slice(1, 2) ?? '';
   const clientId = uuidv4();
   let clients = rooms.get(roomId);
@@ -49,6 +50,4 @@ wss.on('connection', (ws: ExtendedWebSocket, request) => {
 
   console.log('Connected', clientId);
   ws.send(JSON.stringify({ type: MESSAGE_TYPE.ID, id: clientId }));
-});
-
-console.log('Listening on port 8080');
+};
