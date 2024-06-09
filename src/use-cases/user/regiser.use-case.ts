@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { USER } from '../../constants/error-messages';
 import { STATUS_CODES } from '../../constants/status-codes';
 import { User } from '../../models/user.model';
-import { mapUser } from '../../mapper/user.mapper';
 import bcrypt from 'bcrypt';
+import jsonwebtoken from 'jsonwebtoken';
 
 const registerUserSchema = z.object({
   username: z.string({
@@ -46,8 +46,12 @@ export const registerUserUseCase = async (req: any, res: any) => {
     const user = new User(data);
     await user.save();
 
-    const mappedUser = mapUser(user);
-    return res.send(mappedUser);
+    const token = jsonwebtoken.sign(
+      { id: user._id },
+      process.env.JWT_SECRET ?? ''
+    );
+
+    return res.json({ token });
   } catch (err) {
     console.log('Register-User-Failed', err);
     return res.status(STATUS_CODES.ServiceUnavailable).send();
