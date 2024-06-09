@@ -8,3 +8,7 @@ export const USER = {
   USER_ALREADY_EXISTS: 'User already exists',
   USER_NOT_FOUND: 'User Not Found',
 };
+
+export const COMMON = {
+  SERVICE_UNAVAILABLE: 'Service unavailable',
+};
