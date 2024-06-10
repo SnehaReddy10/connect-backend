@@ -14,6 +14,7 @@ export const COMMON = {
 };
 
 export const ISSUE = {
+  INVALID_USERID: 'Invalid User ID',
   INVALID_TITLE: 'Invalid Title',
   INVALID_DESCRIPTION: 'Invalid Description',
 };
