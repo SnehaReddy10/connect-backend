@@ -17,4 +17,6 @@ export const ISSUE = {
   INVALID_USERID: 'Invalid User ID',
   INVALID_TITLE: 'Invalid Title',
   INVALID_DESCRIPTION: 'Invalid Description',
+  ISSUE_NOT_FOUND: 'Issue Not Found',
+  ISSUE_DELETE_SUCCESSFULLY: 'Issue Deleted Successfully',
 };
