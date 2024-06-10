@@ -12,3 +12,8 @@ export const USER = {
 export const COMMON = {
   SERVICE_UNAVAILABLE: 'Service unavailable',
 };
+
+export const ISSUE = {
+  INVALID_TITLE: 'Invalid Title',
+  INVALID_DESCRIPTION: 'Invalid Description',
+};
