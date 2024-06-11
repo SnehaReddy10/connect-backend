@@ -6,16 +6,8 @@ import bcrypt from 'bcrypt';
 import jsonwebtoken from 'jsonwebtoken';
 
 const loginUserSchema = z.object({
-  email: z
-    .string({
-      message: USER.INVALID_EMAIL,
-    })
-    .email({ message: USER.INVALID_EMAIL }),
-  password: z
-    .string({
-      message: USER.INVALID_PASSWORD,
-    })
-    .min(8, { message: USER.PASSWORD_MIN_8 }),
+  email: z.string().email({ message: USER.INVALID_EMAIL }),
+  password: z.string(),
 });
 
 export const loginUseCase = async (req: any, res: any) => {
@@ -23,8 +15,9 @@ export const loginUseCase = async (req: any, res: any) => {
     const { success, data, error } = loginUserSchema.safeParse(req.body);
 
     if (!success) {
-      const errors = error.errors.map((x) => x.message);
-      return res.status(STATUS_CODES.BadRequest).json({ errors });
+      return res
+        .status(STATUS_CODES.BadRequest)
+        .json({ error: error.errors[0].message });
     }
 
     const user = await User.find({ email: data.email });
@@ -50,7 +43,7 @@ export const loginUseCase = async (req: any, res: any) => {
 
     return res.json({ token });
   } catch (err) {
-    console.log('Register-User-Failed', err);
+    console.log('Login-User-Failed', err);
     return res.status(STATUS_CODES.ServiceUnavailable).send();
   }
 };

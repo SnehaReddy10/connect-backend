@@ -29,8 +29,9 @@ export const registerUserUseCase = async (req: any, res: any) => {
     const { success, data, error } = registerUserSchema.safeParse(req.body);
 
     if (!success) {
-      const errors = error.errors.map((x) => x.message);
-      return res.status(STATUS_CODES.BadRequest).json({ errors });
+      return res
+        .status(STATUS_CODES.BadRequest)
+        .json({ error: error.errors[0].message });
     }
 
     const existingUser = await User.find({ email: data.email });
