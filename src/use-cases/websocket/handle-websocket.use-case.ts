@@ -2,10 +2,17 @@ import { WebSocket } from 'ws';
 import { MESSAGE_TYPE } from '../../constants/messages';
 import { ExtendedWebSocket } from '../../interfaces/ExtendedWebSocket';
 import { v4 as uuidv4 } from 'uuid';
+import { Message } from '../../models/message.model';
 
 const rooms = new Map<string, ExtendedWebSocket[]>();
+let messages: any = [];
 
-export const handleWebsocketConnection = (
+setInterval(async () => {
+  await Message.insertMany(messages);
+  messages = [];
+}, 10000);
+
+export const handleWebsocketConnection = async (
   ws: ExtendedWebSocket,
   request: any
 ) => {
@@ -25,7 +32,6 @@ export const handleWebsocketConnection = (
   ws.on('message', (data: string) => {
     const parsedMessage = JSON.parse(data);
 
-    console.log(parsedMessage);
     const { roomId, from, message } = parsedMessage;
     const clientsSubscribedToRoom = rooms.get(roomId) ?? [];
 
@@ -38,6 +44,7 @@ export const handleWebsocketConnection = (
             message: parsedMessage.message,
           })
         );
+        messages.push({ from, message, roomId });
       }
     });
   });
@@ -48,6 +55,13 @@ export const handleWebsocketConnection = (
     console.log('Client Disconnected');
   });
 
+  const prevMessages = await Message.find({ roomId });
   console.log('Connected', clientId);
-  ws.send(JSON.stringify({ type: MESSAGE_TYPE.ID, id: clientId }));
+  ws.send(
+    JSON.stringify({
+      type: MESSAGE_TYPE.ID,
+      id: clientId,
+      messages: prevMessages,
+    })
+  );
 };
