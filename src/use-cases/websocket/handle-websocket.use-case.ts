@@ -32,7 +32,7 @@ export const handleWebsocketConnection = async (
   ws.on('message', (data: string) => {
     const parsedMessage = JSON.parse(data);
 
-    const { roomId, from, message } = parsedMessage;
+    const { roomId, from, message, userId } = parsedMessage;
     const clientsSubscribedToRoom = rooms.get(roomId) ?? [];
 
     clientsSubscribedToRoom.forEach((client) => {
@@ -44,9 +44,9 @@ export const handleWebsocketConnection = async (
             message: parsedMessage.message,
           })
         );
-        messages.push({ from, message, roomId });
       }
     });
+    messages.push({ from, message, roomId, userId });
   });
 
   ws.on('close', () => {
