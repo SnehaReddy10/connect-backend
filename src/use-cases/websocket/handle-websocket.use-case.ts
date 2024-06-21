@@ -7,16 +7,11 @@ import { Message } from '../../models/message.model';
 const rooms = new Map<string, ExtendedWebSocket[]>();
 let messages: any = [];
 
-setInterval(async () => {
-  await Message.insertMany(messages);
-  messages = [];
-}, 10000);
-
 export const handleWebsocketConnection = async (
   ws: ExtendedWebSocket,
   request: any
 ) => {
-  const roomId = request.url?.slice(1, 2) ?? '';
+  const roomId = request.url?.slice(1, request.url.length) ?? '';
   const clientId = uuidv4();
   let clients = rooms.get(roomId);
   ws.clientId = clientId;
@@ -29,7 +24,14 @@ export const handleWebsocketConnection = async (
 
   ws.on('error', console.error);
 
-  ws.on('message', (data: string) => {
+  console.log(messages.length);
+
+  if (messages.length > 20) {
+    await Message.insertMany(messages);
+    messages = [];
+  }
+
+  ws.on('message', async (data: string) => {
     const parsedMessage = JSON.parse(data);
 
     const { roomId, from, message, userId } = parsedMessage;
@@ -49,9 +51,11 @@ export const handleWebsocketConnection = async (
     messages.push({ from, message, roomId, userId });
   });
 
-  ws.on('close', () => {
+  ws.on('close', async () => {
     let remainingClients: any = clients?.filter((x) => x.clientId !== clientId);
     rooms.set(roomId, remainingClients);
+    await Message.insertMany(messages);
+    messages = [];
     console.log('Client Disconnected');
   });
 
